@@ -63,12 +63,14 @@ Coinbase 就是一直停留在 loading 的这个页面。它甚至让我怀疑�
 ### 离线情况下展示警告信息（未连接网络等等），展示 App Shell，但其它都不可用
 
 例子：Uber
+
 ![Uber](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-uber.jpg)
 
 Uber 给用户展示了一些信息（通过 App Shell 以及地图），并且告知用户不能操作是由于他网络中断了。Uber是一个很高频的 app，这样的交互展示对于他们的应用场景很有意义。
 
 ### 离线情况下展示缓存的数据
 例子： Medium
+
 ![Medium](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-medium.jpg)
 
 Medium在离线状态下展示缓存的数据，一些离线展示在这个分类里面的 app（例如，Instagram）还会提示用户离线了，所以，就不要对这个分类里面的 app 期望再搞了。
@@ -82,3 +84,48 @@ Medium在离线状态下展示缓存的数据，一些离线展示在这个分�
 当我们接下来谈到 Web Manifest 时，你就意识到只要给你的 web 应用新增一个桌面 icon，web 应用就可以通过点击这个 icon 实现启动了。
 
 一些公司已经在 PWA 方面做的比较好了，你可以在这个网址上面找到这些公司：[pwa.rocks](https://pwa.rocks/)
+
+## 开发准备
+
+我们已经介绍了足够多的理论知识了。这是一个手把手的教程，来吧，让我们动起手来。首先，按照下面的结构来创建一个新的项目：
+
+```
+|--pwa-demo
+|----css
+|----fonts
+|----images
+|----js
+|----index.html
+|----service-worker.js
+```
+
+下载 [Materialize](http://materializecss.com/) 这个 UI 库，用里面 `CSS`、`Fonts`、`js 文件`分别替换项目里面的文件夹。
+
+打开 `index.html` 文件，引入一些资源：
+
+```html
+<!-- ./index.html -->
+<!DOCTYPE html>
+  <html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+      <link type="text/css" rel="stylesheet" href="css/app.css">
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <body>
+
+      Body coming soon
+
+      <!-- Scripts -->
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+      <script type="text/javascript" src="js/app.js"></script>
+    </body>
+  </html>
+``` 
