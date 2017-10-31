@@ -44,3 +44,25 @@ PWA 中的 service worker，可以类比成春天的播种的农民。下面是 
 - service workers 只能在 HTTPS 协议下生效（或者 Localhost）。
 - service workers 被设计成异步的，不能使用 XHR （但你可以使用 Fetch）或者 LocalStorage。
 - service workers 的作用范围是针对相对路径的。因此，`demo/sw.js` 只能相对于 `demo` 起作用，`demo/first/sw.js` 相对于 `first`。
+
+## Mobile 还是 PWA
+如果你能利用 service workers 存储离线使用所需的文件，那你就没有必要开发移动 app 了。如果你的 web 应用对移动用户进行了优化，并且几乎不需要调用移动端的硬件功能，那么你应该尝试一下 PWA。
+
+我花了一些时间看飞行模式下一些移动 app 的表现。我将它们分成三类：
+
+### 离线情况下不做任何操作
+
+例子： Coinbase
+
+![Coinbase](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-coinbase.jpg)
+
+Coinbase 就是一直停留在 loading 的这个页面。它甚至让我怀疑这样的 app 为啥要存在，因为这个页面简直跟 web 展示一模一样。Coinbase 不是财经类 app，无需实时展示信息，因此，PWA 可能只适用应用于其 App Shell。
+
+> App Shell 是指不包含动态内容的一部分应用程序。例如导航菜单、侧边栏、背景、logo 等等。
+
+### 离线情况下展示警告信息（未连接网络等等），展示 App Shell，但其它都不可用
+
+例子：Uber
+![Uber](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-uber.jpg)
+
+Uber 给用户展示了一些信息（通过 App Shell 以及地图），并且告知用户不能操作是由于他网络中断了。
