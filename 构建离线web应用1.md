@@ -65,4 +65,12 @@ Coinbase 就是一直停留在 loading 的这个页面。它甚至让我怀疑�
 例子：Uber
 ![Uber](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-uber.jpg)
 
-Uber 给用户展示了一些信息（通过 App Shell 以及地图），并且告知用户不能操作是由于他网络中断了。
+Uber 给用户展示了一些信息（通过 App Shell 以及地图），并且告知用户不能操作是由于他网络中断了。Uber是一个很高频的 app，这样的交互展示对于他们的应用场景很有意义。
+
+### 离线情况下展示缓存的数据
+例子： Medium
+![Medium](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-medium.jpg)
+
+Medium在离线状态下展示缓存的数据，一些离线展示在这个分类里面的 app（例如，Instagram）还会提示用户离线了，所以，就不要对这个分类里面的 app 期望再搞了。
+
+## 优化
