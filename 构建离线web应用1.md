@@ -30,3 +30,17 @@
 
 当我们开始构建 PWA 应用时，你就能理解上面的场景了。
 
+## Service Workers
+PWA 背后的原理是 service workers。如果想让用户在离线场景下依然保持打开 web 页面，你需要在用户打开 web 应用并且有网络连接时做一些“后台任务”，这个“后台任务”会搜集 web 页面最近一次运行需要的一些资源，以备离线时使用。
+
+这就好像每年秋收储备粮食，以备冬天不时之需一样，不断循环。
+
+PWA 中的 service worker，可以类比成春天的播种的农民。下面是 MDN 对 service workers 的描述：
+> Service worker 是一个注册在指定源和路径下的事件驱动 worker。它采用 JavaScript 控制关联的页面或者网站，拦截并修改访问和资源请求，细粒度地缓存资源。你可以完全控制应用在特定情形（最常见的情形是网络不可用）下的表现。
+
+简而言之，service worker 就是一些在后台运行逻辑的 worker。它没有权限操作 DOM，但是可以调用其它的 API （例如 IndexDB 以及 Fetch API）。
+
+开始之前请牢记：
+- service workers 只能在 HTTPS 协议下生效（或者 Localhost）。
+- service workers 被设计成异步的，不能使用 XHR （但你可以使用 Fetch）或者 LocalStorage。
+- service workers 的作用范围是针对相对路径的。因此，`demo/sw.js` 只能相对于 `demo` 起作用，`demo/first/sw.js` 相对于 `first`。
