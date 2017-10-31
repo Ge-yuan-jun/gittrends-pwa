@@ -6,13 +6,13 @@
 
 我们准备做这样的一个demo：
 
-![demo预览](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-demo-1.png)
+![demo预览](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-demo-1.png)
 
 ## Progressive Web Apps
 
 渐进式 Web 应用是典型的旨在提高用户离线体验的 Web 应用。它解决了这样的问题：怎么才能不显示类似下面的离线错误？
 
-![离线error](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-demo-2.jpg)
+![离线error](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-demo-2.jpg)
 
 事实上，PWA 不仅解决了离线错误，还在恢复连接的时候将用户与内容连接起来。移动设备是渐进式 web 应用的主要使用场景。让我来告诉你为什么？
 
@@ -54,7 +54,7 @@ PWA 中的 service worker，可以类比成春天的播种的农民。下面是 
 
 例子： Coinbase
 
-![Coinbase](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-coinbase.jpg)
+![Coinbase](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-coinbase.jpg)
 
 Coinbase 就是一直停留在 loading 的这个页面。它甚至让我怀疑这样的 app 为啥要存在，因为这个页面简直跟 web 展示一模一样。Coinbase 不是财经类 app，无需实时展示信息，因此，PWA 可能只适用应用于其 App Shell。
 
@@ -63,13 +63,13 @@ Coinbase 就是一直停留在 loading 的这个页面。它甚至让我怀疑�
 ### 离线情况下展示警告信息（未连接网络等等），展示 App Shell，但其它都不可用
 
 例子：Uber
-![Uber](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-uber.jpg)
+![Uber](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-uber.jpg)
 
 Uber 给用户展示了一些信息（通过 App Shell 以及地图），并且告知用户不能操作是由于他网络中断了。Uber是一个很高频的 app，这样的交互展示对于他们的应用场景很有意义。
 
 ### 离线情况下展示缓存的数据
 例子： Medium
-![Medium](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-medium.jpg)
+![Medium](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-medium.jpg)
 
 Medium在离线状态下展示缓存的数据，一些离线展示在这个分类里面的 app（例如，Instagram）还会提示用户离线了，所以，就不要对这个分类里面的 app 期望再搞了。
 
