@@ -5,3 +5,5 @@
 而今天，我们就要介绍一个新技术--渐进式 web 应用程序。在理解这个概念并自己尝试了一下之后，我觉得没有必要再做 hybrid 应用了。
 
 我们准备做这样的一个demo：
+
+![demo预览](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/pwa-demo-1.png)
