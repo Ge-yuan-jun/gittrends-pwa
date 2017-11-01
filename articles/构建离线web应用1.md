@@ -131,3 +131,139 @@ Medium在离线状态下展示缓存的数据，一些离线展示在这个分�
 ``` 
 
 我们已经引入了下载好的文件，还需要自己在相应的目录创建一下 `app.css` 以及 `app.js` 这两个文件。
+
+## 注册 Service Worker
+
+越早在浏览器注册，Service Worker 就能越早的开始工作。最佳的做法是在应用的入口。在这个项目中，我们可以在 `app.js` 注册一个新的 worker：
+
+```js
+(function(){
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+     .register('/service-worker.js')
+     .then(function() { 
+        console.log('Service Worker Registered'); 
+      });
+  }    
+})()
+```
+
+在做其他操作之前，我们首先需要检测一下浏览器对于 Service Worker 的兼容性。如果支持，那我们就可以利用 `register` 这个方法来注册这个 worker，这个方法告知了 service worker 文件的路径。注册函数返回一个 promise ，你可以在这个 promise 里面判断注册是否成功。
+
+## Service Worker 周期
+
+在开始构建 PWA 之前，你需要理解 Service Worker 的生命周期：
+
+### Install
+
+这一阶段主要是让 worker 在浏览器给定的作用域挂载。由于这是生命周期的第一步，最好在这一步缓存各种资源：
+
+```js
+// ./service-worker.js
+
+var cacheName = 'PWADemo-v1';
+var filesToCache = [
+  '/index.html',
+  '/css/app.css',
+  '/js/app.js',
+  /* ...and other assets (jQuery, Materialize, fonts, etc) */
+];
+
+self.addEventListener('install', function(e) {
+  console.log('[ServiceWorker] Install');
+  e.waitUntil(
+    caches.open(cacheName).then(function(cache) {
+      console.log('[ServiceWorker] Caching app shell');
+      return cache.addAll(filesToCache);
+    })
+  );
+});
+```
+
+- `caches.open` 和 `cache.addAll` 都是异步操作.service worker 在这些操作完成之前可能会中断,`e.waitUntil`用来等待 promise 的状态变成 resolved 或者 rejected。
+- 当缓存开关被打开时，我们尝试利用 `addAll` 来新增缓存。
+- 请记住，只要有一个文件缓存失败，service worker 就无法被正确挂载。
+
+### Activate
+
+当 worker 挂载完成，其效果并不会立即展示出来，除非前一个 service worker 销毁并且该 web 应用被重新访问。假设我们挂载了另一个不同 cacheName 的 service worker:
+
+```
+// ./service-worker.js
+
+var cacheName = 'PWADemo-v2';
+var filesToCache = [
+  //...
+];
+
+self.addEventListener('install', function(e) {
+  console.log('[ServiceWorker] Install');
+  //...
+});
+```
+
+当这个新的 service worker 创建之后，新的缓存 `PWADemo-v2` 也被创建，这时候 `PWADemo-v1` 仍然存在。当触发 Activate 时，我们可以删除 `PWADemo-v1`，使其“让位”于 `PWADemo-v2`：
+
+```js
+// ./service-worker.js
+
+self.addEventListener('activate', function(e) {
+  console.log('[ServiceWorker] Activate');
+  e.waitUntil(
+    caches.keys().then(function(keyList) {
+      return Promise.all(keyList.map(function(key) {
+        if (key !== cacheName) {
+          console.log('[ServiceWorker] Removing old cache', key);
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
+});
+```
+
+我们检查所有的 cache 名称，如果发现不是正在使用的 cache，那么将其直接删除。
+
+### Fetch
+
+Fetch 不是一个必需的生命周期，但它提供了拦截请求资源的方法。当发送请求时，首先会触发这样的事件：
+
+```js
+// ./service-worker.js
+
+self.addEventListener('fetch', function(e) {
+  console.log('[ServiceWorker] Fetch', e.request.url);
+  e.respondWith(
+    caches.match(e.request).then(function(response) {
+      return response || fetch(e.request);
+    })
+  );
+});
+```
+
+如果资源已经被缓存了，我们返回浏览器缓存的版本。如果没有，那么我们调用 fetch api 去发送 HTTP 请求该资源。
+
+## Debuggering Service Workers
+
+由于 service workers 的工作方式，特别是进行缓存时，不是很容易进行 debugger 调试。幸运的是，chrome 的 dev tools 提供了助力。跟着下面的步骤，调试我们刚注册的 service worker：
+
+- 打开 chrome dev tools
+- 点击 Application 这一选项，打开 service worker 分区：
+
+![chrome dev tools](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-1.jpg)
+
+- 你可以查看到 status 是绿色的，这就表明你的 service worker 成功了：
+
+![status]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-2.jpg)
+
+- 你可以打开 "Update on reload" 去强制更新 service worker，不用关闭所有已存在的 session：
+
+![update on reload]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-3.jpg)
+
+- 右击 "Cache Storage"，然后点击刷新去查看缓存。根据名称点击你所设置的cache，然后你就会看到缓存里面的各个项：
+
+![Cache Storage]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-4.jpg)
+
+## 接下来
+
+你已经了解了必备的知识点，PWA 的概念对你来说已经不陌生了。接下来，我们将要讨论 PWA 的缓存策略。我们将了解如何使用 IndexDB 来保存数据而不是 localStorage。
