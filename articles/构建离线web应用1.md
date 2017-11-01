@@ -1,3 +1,12 @@
+关于本文：
+[原文地址](https://scotch.io/tutorials/build-a-progressive-web-app-offline-git-trending-app-part-1-concepts-and-service-workers)
+
+[译文地址](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/%E6%9E%84%E5%BB%BA%E7%A6%BB%E7%BA%BFweb%E5%BA%94%E7%94%A81.md)
+
+译者：墨白
+
+------
+
 我喜欢移动app，而且也是那些坚持使用Web技术构建移动应用程序的人之一。
 
 经过技术的不断迭代（可能还有一些其它的东西），移动体验设计愈来愈平易近人，给予用户更好的体验。
