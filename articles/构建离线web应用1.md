@@ -254,15 +254,15 @@ self.addEventListener('fetch', function(e) {
 
 - 你可以查看到 status 是绿色的，这就表明你的 service worker 成功了：
 
-![status]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-2.jpg)
+![status](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-2.jpg)
 
 - 你可以打开 "Update on reload" 去强制更新 service worker，不用关闭所有已存在的 session：
 
-![update on reload]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-3.jpg)
+![update on reload](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-3.jpg)
 
 - 右击 "Cache Storage"，然后点击刷新去查看缓存。根据名称点击你所设置的cache，然后你就会看到缓存里面的各个项：
 
-![Cache Storage]((https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-4.jpg)
+![Cache Storage](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-debugger-4.jpg)
 
 ## 接下来
 
