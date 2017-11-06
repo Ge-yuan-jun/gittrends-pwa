@@ -1,6 +1,6 @@
 关于本文：
 
-![原文地址](https://scotch.io/tutorials/build-an-offline-git-trending-pwa-part-2-caching-and-offline)
+[原文地址](https://scotch.io/tutorials/build-an-offline-git-trending-pwa-part-2-caching-and-offline)
 
 
 译者：墨白
