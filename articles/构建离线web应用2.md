@@ -98,5 +98,9 @@ fetch(app.apiURL)
 
 目前有两种可持续性数据存储方案 -- Cache Storage 以及 Index DB（IDB）。
 
-- **Cache Storage**：
-- **Index DB**：
+- **Cache Storage**：在过去的一段时间里，我们依赖 AppCache 来进行缓存处理，但我们需要一个可操作性更强的 API。幸运的是，浏览器提供了 Cache 这样的一个 API，给 Service Worker 的缓存操作带来了更多的可能。并且，这个 API 同时支持 service workers 以及 web 页面。在前一篇文章中，我们已经使用过了这个 API。
+- **Index DB**：Index DB 是一个异步数据存储方案。对于这个 API 是又爱又恨，还好，像localForage这样的类库使用类似localStorage的操作方式简化了API。
+
+Service Worker 对于这两种存储方案都提供支持。那么问题来了，什么场景下选择哪一种技术方案呢？[ Addy Osmani 的博客](https://medium.com/dev-channel/offline-storage-for-progressive-web-apps-70d52695513c)已经总结好了。
+
+> 对于利用 URL 可直接查看的资源，使用支持 Service Worker 的 Cache API。其它类型的资源，使用利用 Promise 包裹之后的 IndexedDB。
