@@ -40,3 +40,63 @@ self.addEventListener('install', function(e) {
 ```
 
 缓存的资源包括 HTML 模板，CSS 文件，JavaScript，fonts，少量的图片。
+
+### 缓存请求返回的数据
+
+这个方案是指如果之前的网络请求数据被缓存了，那么就用缓存的数据更新页面。如果缓存不可用，那直接去网络请求数据。当请求成功返回时，利用返回的数据更新页面并缓存返回的数据。
+
+```js
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.open(cacheName).then(function(cache) {
+      return cache.match(event.request).then(function (response) {
+        return response || fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      });
+    })
+  );
+});
+```
+
+这种方案主要应用用户频繁手动更新内容的场景，比如用户的收件箱或者文章内容。
+
+### 先展示缓存，再根据请求的数据更新页面
+
+这种方案将同时请求缓存以及服务端的数据。如果某一项在缓存中有对应的数据，好，直接在页面中展示。当网络请求的数据返回时，利用返回的数据更新页面：
+
+```js
+let networkReturned = false;
+if ('caches' in window) {
+  caches.match(app.apiURL).then(function(response) {
+    if (response) {
+      response.json().then(function(trends) {
+        console.log('From cache...')
+        if(!networkReturned) {
+          app.updateTrends(trends);
+        }
+      });
+    }
+  });
+}
+
+fetch(app.apiURL)
+.then(response => response.json())
+.then(function(trends) {
+  console.log('From server...')
+  networkReturned = true;
+  app.updateTrends(trends.items)
+}).catch(function(err) {
+  // Error
+});
+```
+
+在大多数情况下，网络请求返回的数据会将从缓存中取出的数据覆盖。但在网页中，什么情况都有可能发生，有时候网络请求数据比从缓存中取数据要快。因此，我们需要设置一个 flag 来判断网络请求有没有返回，这就是上例中的 networkReturned。
+
+## 缓存部分技术选型
+
+目前有两种可持续性数据存储方案 -- Cache Storage 以及 Index DB（IDB）。
+
+- **Cache Storage**：
+- **Index DB**：
