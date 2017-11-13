@@ -1,0 +1,24 @@
+{
+  "name": "gittrends-pwa",
+  "version": "1.0.0",
+  "description": "利用 service workers 尝试 pwa 的实现",
+  "main": "service-worker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sw": "sw-precache --config=tools/precache.js --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ge-yuan-jun/gittrends-pwa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ge-yuan-jun/gittrends-pwa/issues"
+  },
+  "homepage": "https://github.com/Ge-yuan-jun/gittrends-pwa#readme",
+  "devDependencies": {
+    "sw-precache": "^5.2.0"
+  }
+}

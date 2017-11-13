@@ -103,4 +103,59 @@ fetch(app.apiURL)
 
 Service Worker 对于这两种存储方案都提供支持。那么问题来了，什么场景下选择哪一种技术方案呢？[ Addy Osmani 的博客](https://medium.com/dev-channel/offline-storage-for-progressive-web-apps-70d52695513c)已经总结好了。
 
-> 对于利用 URL 可直接查看的资源，使用支持 Service Worker 的 Cache API。其它类型的资源，使用利用 Promise 包裹之后的 IndexedDB。
+> 对于利用 URL 可直接查看的资源，使用支持 Service Worker 的 Cache Storage。其它类型的资源，使用利用 Promise 包裹之后的 IndexedDB。
+
+## SW Precache
+
+上文已经介绍了缓存策略以及数据缓存数据。在实战之前，还想给大家介绍一下谷歌的 [SW Precache](https://github.com/GoogleChromeLabs/sw-precache)。
+
+这个工具还有一个额外的功能：将我们之前讨论的缓存文件设置利用正则简化成一个配置对象。所有你需要做的就是在一个数组中定义缓存的项目。
+
+让我们来尝试使用一下 precache，让其自动生成 `service-worker.js`。首先，我们需要在项目的根目录下新增一个 `package.json` 文件：
+
+```js
+npm init -y
+```
+
+安装 sw-precache：
+
+```js
+npm install --save-dev sw-precache
+```
+
+创建一个配置文件：
+```js
+// ./tools/precache.js
+
+const name = 'scotchPWA-v1'
+module.exports = {
+  staticFileGlobs: [
+    './index.html',
+    './images/*.{png,svg,gif,jpg}',
+    './fonts/**/*.{woff,woff2}',
+    './js/*.js',
+    './css/*.css',
+    'https://fonts.googleapis.com/icon?family=Material+Icons'
+  ],
+  stripPrefix: '.'
+};
+```
+
+`staticFileGlobs` 里面利用正则匹配我们想要缓存的文件。只需要利用正则，比之前枚举所有的文件简单很多。
+
+在 `package.json` 中新增一个 script 用来生成 service worker 文件：
+
+```js
+"scripts": {
+  "sw": "sw-precache --config=tools/precache.js --verbose"
+},
+```
+
+运行下面的命令即可生成 service worker 文件：
+
+```js
+npm run sw
+```
+
+查看生成的文件，是不是很熟悉？
+
