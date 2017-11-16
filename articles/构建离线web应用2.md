@@ -295,3 +295,76 @@ app.createCard = function(trend) {
 ```
 
 ![trending](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-card.jpg)
+
+## 运行时缓存的内容
+
+在应用程序运行时，需要缓存从服务端获取的动态内容。不再是 app shell 了，而是用户真正浏览的内容。
+
+我们需要提前配置告诉 service worker ，在运行时需要缓存的文件：
+
+```js
+// ./tools/precache.js
+const name = 'scotchPWA-v1'
+module.exports = {
+  staticFileGlobs: [
+    // ...
+  ],
+  stripPrefix: '.',
+  // Run time cache
+  runtimeCaching: [{
+    urlPattern: /https:\/\/api\.github\.com\/search\/repositories/,
+    handler: 'networkFirst',
+    options: {
+      cache: {
+        name: name
+      }
+    }
+  }]
+};
+```
+
+我们定义了一个 url 正则匹配符，匹配成功时，读取缓存。这个正则匹配所有的 Github 搜索 API。我们打算应用“Cache, Then network.”的策略。
+
+这样，我们先展示缓存的内容，当有网络连接时候，更新内容：
+
+```js
+app.getTrends = function() {
+ const networkReturned = false;
+  if ('caches' in window) {
+    caches.match(app.apiURL).then(function(response) {
+      if (response) {
+        response.json().then(function(trends) {
+          console.log('From cache...')
+          if(!networkReturned) {
+            app.updateTrends(trends);
+          }
+        });
+      }
+    });
+  }
+
+  fetch(app.apiURL)
+  .then(response => response.json())
+  .then(function(trends) {
+    console.log('From server...')
+    app.updateTrends(trends.items)
+    networkReturned = true;
+  }).catch(function(err) {
+    // Error
+  });
+}
+```
+
+在 `precache.js` 中更新缓存的版本，重新生成 service worker:
+
+```js
+const name = 'scotchPWA-v2'
+```
+
+```bash
+npm run sw
+```
+
+当你运行应用的时候，尝试刷新，打开控制台，勾选 offline 选项。之后，刷新，以及见证奇迹的时刻：
+
+![trending](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-refresh.jpg)
