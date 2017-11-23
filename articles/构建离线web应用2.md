@@ -368,3 +368,21 @@ npm run sw
 当你运行应用的时候，尝试刷新，打开控制台，勾选 offline 选项。之后，刷新，以及见证奇迹的时刻：
 
 ![trending](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-refresh.jpg)
+
+## 刷新
+
+用户可能需要在网络情况更佳的时候刷新页面，我们需要给予用户这样的权利。我们可以给刷新按钮添加一个事件，当时间触发时，调用 `getTrends` 方法：
+
+```js
+document.addEventListener('DOMContentLoaded', function() {
+ app.getTrends()
+
+ // Event listener for refresh button
+ const refreshButton = document.querySelector('.refresh');
+ refreshButton.addEventListener('click', app.getTrends)
+})
+```
+
+## 下一步？
+
+感觉不是很满足？现在你已经知道了如何创建离线应用，在接下来的文章中，我们将继续讨论这项技术的有趣之处，包括推送通知，主屏幕图标创建等等···
