@@ -10,5 +10,12 @@ module.exports = {
     './css/*.css',
     'https://fonts.googleapis.com/icon?family=Material+Icons'
   ],
-  stripPrefix: '.'
+  stripPrefix: '.',
+  runtimeCaching: [{
+    urlPattern: /https:\/\/api\.github\.com\/search\/repositories/,
+    handler: 'networkFirst',
+    options: {
+      cache: name
+    }
+  }]
 };
