@@ -159,3 +159,230 @@ npm run sw
 
 查看生成的文件，是不是很熟悉？
 
+## 完成 demo
+
+在做 web 应用离线功能之前，让我们先来完成应用的基本功能。
+
+回到 `app.js` 文件，我们要在页面加载完成时去获取当前 Github 流行的项目（项目以 star 数的多少来排序）：
+
+```js
+(function() {
+  const app = {
+    apiURL: `https://api.github.com/search/repositories?q=created:%22${dates.startDate()}+..+${dates.endDate()}%22%20language:javascript&sort=stars&order=desc`
+  }
+
+  app.getTrends = function() {
+    fetch(app.apiURL)
+    .then(response => response.json())
+    .then(function(trends) {
+      console.log('From server...')
+      app.updateTrends(trends.items)
+    }).catch(function(err) {
+      // Error
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    app.getTrends()
+  })
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+     .register('/service-worker.js')
+     .then(function() { 
+        console.log('Service Worker Registered'); 
+      });
+  }
+})()
+```
+
+注意 API URL 字符串中的日期。我们是这样构造的：
+
+```js
+Date.prototype.yyyymmdd = function() {
+  // getMonth is zero based,
+  // so we increment by 1
+  let mm = this.getMonth() + 1;
+  let dd = this.getDate();
+
+  return [this.getFullYear(),
+          (mm>9 ? '' : '0') + mm,
+          (dd>9 ? '' : '0') + dd
+        ].join('-');
+};
+
+const dates = {
+  startDate: function() {
+     const startDate = new Date();
+     startDate.setDate(startDate.getDate() - 7);
+     return startDate.yyyymmdd();
+   },
+   endDate: function() {
+     const endDate = new Date();
+     return endDate.yyyymmdd();
+   }
+ }
+```
+
+`yyyymmdd` 帮我们将日期构造成 Github API 所规定的格式（`yyyy-mm-dd`）。
+
+当 `getTrends` 获取数据之后，调用了 `updateTrends` 方法，传入获取到的数据。让我们看看这个方法做了些什么：
+
+```js
+app.updateTrends = function(trends) {
+ const trendsRow = document.querySelector('.trends');
+  for(let i = 0; i < trends.length; i++) {
+    const trend = trends[i];
+    trendsRow.appendChild(app.createCard(trend));
+  }
+}
+```
+
+遍历请求返回的数据，利用 `createCard` 来创建 DOM 模板，然后，将这段 DOM 插入 `.trends` 元素： 
+
+```html
+<!-- ./index.html -->
+
+<div class="row trends">
+ <!-- append here -->
+</div>
+```
+
+`createCard` 利用下面的代码来创建模板：
+
+```js
+const app = {
+  apiURL: `...`,
+  cardTemplate: document.querySelector('.card-template')
+}
+
+app.createCard = function(trend) {
+  const card = app.cardTemplate.cloneNode(true);
+  card.classList.remove('card-template')
+  card.querySelector('.card-title').textContent = trend.full_name
+  card.querySelector('.card-lang').textContent = trend.language
+  card.querySelector('.card-stars').textContent = trend.stargazers_count
+  card.querySelector('.card-forks').textContent = trend.forks
+  card.querySelector('.card-link').setAttribute('href', trend.html_url)
+  card.querySelector('.card-link').setAttribute('target', '_blank')
+  return card;
+}
+```
+
+下面就是所创建的 DOM 结构：
+
+```HTML
+<div class="row trends">
+  <divclass="col s12 m4 card-template">
+    <div class="card horizontal">
+      <div class="card-stacked">
+        <div class="card-content white-text">
+          <span class="card-title">Card Title</span>
+          <div class="card-sub grey-text text-lighten-2">
+            <i class="material-icons">info</i><span class="card-lang"> JavaScript</span>
+            <i class="material-icons">star</i><span class="card-stars"> 299</span>
+            <i class="material-icons">assessment</i><span class="card-forks"> 100</span>
+          </div>
+          <p>A set of best practices for JavaScript projects</p>
+        </div>
+        <div class="card-action">
+          <a href="#" class="card-link">Visit Repo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+![trending](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-card.jpg)
+
+## 运行时缓存的内容
+
+在应用程序运行时，需要缓存从服务端获取的动态内容。不再是 app shell 了，而是用户真正浏览的内容。
+
+我们需要提前配置告诉 service worker ，在运行时需要缓存的文件：
+
+```js
+// ./tools/precache.js
+const name = 'scotchPWA-v1'
+module.exports = {
+  staticFileGlobs: [
+    // ...
+  ],
+  stripPrefix: '.',
+  // Run time cache
+  runtimeCaching: [{
+    urlPattern: /https:\/\/api\.github\.com\/search\/repositories/,
+    handler: 'networkFirst',
+    options: {
+      cache: {
+        name: name
+      }
+    }
+  }]
+};
+```
+
+我们定义了一个 url 正则匹配符，匹配成功时，读取缓存。这个正则匹配所有的 Github 搜索 API。我们打算应用“Cache, Then network.”的策略。
+
+这样，我们先展示缓存的内容，当有网络连接时候，更新内容：
+
+```js
+app.getTrends = function() {
+ const networkReturned = false;
+  if ('caches' in window) {
+    caches.match(app.apiURL).then(function(response) {
+      if (response) {
+        response.json().then(function(trends) {
+          console.log('From cache...')
+          if(!networkReturned) {
+            app.updateTrends(trends);
+          }
+        });
+      }
+    });
+  }
+
+  fetch(app.apiURL)
+  .then(response => response.json())
+  .then(function(trends) {
+    console.log('From server...')
+    app.updateTrends(trends.items)
+    networkReturned = true;
+  }).catch(function(err) {
+    // Error
+  });
+}
+```
+
+在 `precache.js` 中更新缓存的版本，重新生成 service worker:
+
+```js
+const name = 'scotchPWA-v2'
+```
+
+```bash
+npm run sw
+```
+
+当你运行应用的时候，尝试刷新，打开控制台，勾选 offline 选项。之后，刷新，以及见证奇迹的时刻：
+
+![trending](https://github.com/Ge-yuan-jun/gittrends-pwa/blob/master/articles/img/pwa-refresh.jpg)
+
+## 刷新
+
+用户可能需要在网络情况更佳的时候刷新页面，我们需要给予用户这样的权利。我们可以给刷新按钮添加一个事件，当时间触发时，调用 `getTrends` 方法：
+
+```js
+document.addEventListener('DOMContentLoaded', function() {
+ app.getTrends()
+
+ // Event listener for refresh button
+ const refreshButton = document.querySelector('.refresh');
+ refreshButton.addEventListener('click', app.getTrends)
+})
+```
+
+## 下一步？
+
+感觉不是很满足？现在你已经知道了如何创建离线应用，在接下来的文章中，我们将继续讨论这项技术的有趣之处，包括推送通知，主屏幕图标创建等等···
