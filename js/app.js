@@ -23,5 +23,63 @@
     cardTemplate: document.querySelector('.card-template')
   }
 
+  app.updateTrends = function (trends) {
+    const trendsRow = document.querySelector('.trends')
+    for (let i = 0; i < trends.length; i++) {
+      const trend = trends[i]
+      trendsRow.appendChild(app.createCard(trend))
+    }
+  }
 
+  app.createCard = function (trend) {
+    const card = app.cardTemplate.cloneNode(true)
+    card.classList.remove('card-template')
+    card.querySelector('.card-title').textContent = trend.full_name
+    card.querySelector('.card-lang').textContent = trend.language
+    card.querySelector('.card-stars').textContent = trend.stargazers_count
+    card.querySelector('.card-forks').textContent = trend.forks
+    card.querySelector('.card-link').setAttribute('href', trend.html_url)
+    card.querySelector('.card-link').setAttribute('target', '_blank')
+    return card
+  }
+
+  app.getTrends = function () {
+    const networkReturned = false
+    if ('caches' in window) {
+      caches.match(app.apiURL).then(function (response) {
+        if (response) {
+          response.json().then(function (trends) {
+            console.log(' from cache...')
+            if (!networkReturned) {
+              app.updateTrends(trends.items)
+            }
+          })
+        }
+      })
+    }
+
+    fetch(app.apiURL)
+      .then(response => response.json())
+      .then(function (trends) {
+        console.log('from server ...')
+        app.updateTrends(trends.items)
+        networkReturned = true
+      }).catch(function (err) {
+        console.error(err)
+    })
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    app.getTrends()
+    var refreshButton = document.querySelector('.refresh')
+    refreshButton.addEventListener('click', app.getTrends)
+  })
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('service-worker.js')
+      .then(function () {
+        console.log('Service worker registered')
+      })
+  }
 })()
