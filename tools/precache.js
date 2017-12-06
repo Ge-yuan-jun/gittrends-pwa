@@ -3,11 +3,11 @@
 const name = 'scotchPWA-v1'
 module.exports = {
   staticFileGlobs: [
-    './index.html',
-    './images/*.{png,svg,gif,jpg}',
-    './fonts/**/*.{woff,woff2}',
-    './js/*.js',
-    './css/*.css',
+    './gittrends-pwa/index.html',
+    './gittrends-pwa/images/*.{png,svg,gif,jpg}',
+    './gittrends-pwa/fonts/**/*.{woff,woff2}',
+    './gittrends-pwa/js/*.js',
+    './gittrends-pwa/css/*.css',
     'https://fonts.googleapis.com/icon?family=Material+Icons'
   ],
   stripPrefix: '.',
