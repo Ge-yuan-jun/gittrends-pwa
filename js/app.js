@@ -1,4 +1,4 @@
-(function () {
+module.exports = (function () {
   Date.prototype.yyyymmdd = function () {
     let mm = this.getMonth() + 1
     let dd = this.getDate()
